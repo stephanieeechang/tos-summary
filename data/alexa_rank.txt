@@ -1,0 +1,899 @@
+google.com
+searchenginesandportals
+
+facebook.com
+business, socialnetworking
+
+youtube.com
+entertainment, streamingmedia
+
+yahoo.com
+entertainment, newsandmedia
+
+wikipedia.org
+education
+
+amazon.com
+shopping
+
+blogger.com
+blogsandpersonal
+
+linkedin.com
+jobrelated, socialnetworking
+
+reddit.com
+messageboardsandforums, newsandmedia
+
+myspace.com
+entertainment
+
+wordpress.com
+business, informationtech
+
+msn.com
+education, newsandmedia
+
+google.co.in
+searchenginesandportals
+
+jd.com
+education, informationtech
+
+ebay.com
+shopping
+
+netflix.com
+entertainment, streamingmedia
+
+bing.com
+newsandmedia, searchenginesandportals
+
+live.com
+business, informationtech
+
+google.co.uk
+searchenginesandportals
+
+amazon.in
+business
+
+pinterest.com
+mediasharing, socialnetworking
+
+babylon.com
+business
+
+t.co
+contentserver
+
+tumblr.com
+blogsandpersonal, socialnetworking
+
+aliexpress.com
+shopping
+
+ask.com
+searchenginesandportals
+
+instagram.com
+mediasharing, socialnetworking
+
+livejasmin.com
+adult, shopping
+
+apple.com
+business, informationtech, shopping
+
+imgur.com
+mediasharing
+
+aol.com
+business, newsandmedia
+
+craigslist.org
+messageboardsandforums, shopping
+
+office.com
+business, informationtech, shopping
+
+bbc.co.uk
+newsandmedia
+
+paypal.com
+business, economyandfinance
+
+imdb.com
+entertainment
+
+photobucket.com
+mediasharing, shopping
+
+google.ca
+searchenginesandportals
+
+stackoverflow.com
+informationtech, messageboardsandforums
+
+xhamster.com
+adult
+
+adcash.com
+advertising, business
+
+alibaba.com
+shopping
+
+adobe.com
+business
+
+mozilla.com
+informationtech
+
+pornhub.com
+adult
+
+friendster.com
+business
+
+vmn.net
+business
+
+adultfriendfinder.com
+personals
+
+ntd.tv
+education
+
+wikia.com
+education
+
+github.com
+business, informationtech
+
+orkut.co.in
+uncategorized
+
+mediafire.com
+business, informationtech, mediasharing
+
+bongacams.com
+adult
+
+microsoftonline.com
+business, education, informationtech
+
+espn.go.com
+sports
+
+mywebsearch.com
+business, education
+
+cnn.com
+business, newsandmedia
+
+orkut.com
+blogsandpersonal, business, education
+
+zynga.com
+games
+
+popads.net
+advertising
+
+wordpress.org
+business, informationtech
+
+diply.com
+education, entertainment
+
+fandom.com
+entertainment
+
+googleadservices.com
+advertising
+
+google.de
+searchenginesandportals
+
+amazon.co.uk
+shopping
+
+about.com
+business
+
+nytimes.com
+newsandmedia
+
+4shared.com
+business, informationtech, mediasharing
+
+livejournal.com
+blogsandpersonal
+
+google.com.au
+searchenginesandportals
+
+redtube.com
+adult
+
+typepad.com
+business
+
+adf.ly
+business, informationtech
+
+huffingtonpost.com
+entertainment, newsandmedia
+
+kat.cr
+illegalcontent, mediasharing
+
+outbrain.com
+advertising, business
+
+zedo.com
+business, informationtech
+
+kickass.to
+uncategorized
+
+youporn.com
+adult
+
+cnet.com
+business, informationtech, shopping
+
+xnxx.com
+adult
+
+flipkart.com
+shopping
+
+files.wordpress.com
+business, informationtech
+
+google.co.jp
+searchenginesandportals
+
+dailymail.co.uk
+entertainment, newsandmedia
+
+delta-search.com
+uncategorized
+
+hotfile.com
+business
+
+ebay.co.uk
+shopping
+
+spotify.com
+business, streamingmedia
+
+mininova.org
+education
+
+ehow.com
+business, foodandrecipes
+
+conduit.com
+business
+
+google.com.pk
+searchenginesandportals
+
+rediff.com
+entertainment, newsandmedia
+
+themeforest.net
+business, informationtech
+
+indiatimes.com
+education, newsandmedia
+
+doubleclick.com
+advertising, business
+
+amazonaws.com
+business, informationtech
+
+dailymotion.com
+entertainment
+
+threadsphere.bid
+business
+
+medium.com
+business, education
+
+avg.com
+business, informationtech
+
+buzzfeed.com
+entertainment
+
+booking.com
+travel
+
+vimeo.com
+streamingmedia
+
+salesforce.com
+business
+
+stackexchange.com
+business, education, informationtech
+
+espncricinfo.com
+education, sports
+
+mozilla.org
+business, informationtech
+
+roblox.com
+games, socialnetworking
+
+weather.com
+entertainment
+
+walmart.com
+shopping
+
+force.com
+business
+
+deviantart.com
+entertainment
+
+directrev.com
+business
+
+clicksor.com
+business
+
+twitpic.com
+uncategorized
+
+optmd.com
+business
+
+badoo.com
+personals
+
+cpxinteractive.com
+business
+
+xtendmedia.com
+business
+
+chase.com
+business, economyandfinance
+
+instructure.com
+business, education
+
+ezinearticles.com
+advertising, business
+
+google.co.za
+searchenginesandportals
+
+stumbleupon.com
+uncategorized
+
+searchnu.com
+business
+
+digg.com
+newsandmedia
+
+aweber.com
+business
+
+slideshare.net
+business, informationtech, mediasharing
+
+metacafe.com
+education, entertainment
+
+kat.ph
+business
+
+dropbox.com
+business, informationtech, mediasharing
+
+comcast.net
+business, shopping
+
+search-results.com
+uncategorized
+
+blastingnews.com
+business, education
+
+bankofamerica.com
+business, economyandfinance
+
+hootsuite.com
+business
+
+wikimedia.org
+education
+
+yelp.com
+business
+
+ning.com
+business
+
+filestube.com
+entertainment
+
+fiverr.com
+business
+
+forbes.com
+economyandfinance, newsandmedia
+
+chaturbate.com
+adult
+
+etsy.com
+shopping
+
+cricbuzz.com
+education, sports
+
+researchgate.net
+business, education
+
+paypopup.com
+advertising, business
+
+download.com
+business, informationtech
+
+twitch.tv
+entertainment, games, streamingmedia
+
+redd.it
+education, newsandmedia
+
+theguardian.com
+education, newsandmedia
+
+google.com.sg
+searchenginesandportals
+
+uclaut.net
+business, informationtech
+
+disqus.com
+business
+
+bebo.com
+games
+
+sourceforge.net
+business, informationtech
+
+abs-cbn.com
+business, entertainment
+
+wellsfargo.com
+business, economyandfinance
+
+skype.com
+business, chatandmessaging
+
+google.com.ph
+searchenginesandportals
+
+fileserve.com
+mediasharing
+
+youjizz.com
+adult
+
+statcounter.com
+business, informationtech
+
+addthis.com
+advertising, business, informationtech
+
+bit.ly
+contentserver, informationtech
+
+fastbrowsersearch.com
+searchenginesandportals
+
+foxnews.com
+newsandmedia
+
+scribd.com
+business, education
+
+businessinsider.com
+business, newsandmedia
+
+shutterstock.com
+business, mediasharing
+
+providr.com
+education, newsandmedia
+
+angege.com
+advertising, business
+
+domaintools.com
+business, informationtech
+
+freepik.com
+business, education
+
+reference.com
+education
+
+steamcommunity.com
+games, messageboardsandforums
+
+veoh.com
+entertainment, streamingmedia
+
+dell.com
+business, informationtech
+
+clickbank.com
+business, education
+
+hostgator.com
+business, informationtech
+
+lifedaily.com
+education
+
+y2mate.com
+entertainment, informationtech, mediasharing
+
+multiply.com
+education, travel
+
+maktoob.com
+education, newsandmedia
+
+snapdeal.com
+entertainment, shopping
+
+depositfiles.com
+business, informationtech
+
+9gag.com
+adult, messageboardsandforums
+
+godaddy.com
+business, informationtech
+
+bet9ja.com
+gambling
+
+linkbucks.com
+business
+
+guardian.co.uk
+newsandmedia
+
+reimageplus.com
+business, informationtech
+
+academia.edu
+education
+
+mashable.com
+business, education
+
+taboola.com
+advertising, business
+
+hulu.com
+entertainment, streamingmedia
+
+google.com.ng
+searchenginesandportals
+
+larati.net
+business, informationtech
+
+hubpages.com
+business, education
+
+washingtonpost.com
+entertainment, newsandmedia
+
+onlinevideoconverter.com
+education, informationtech
+
+filesonic.com
+informationtech
+
+sweetim.com
+uncategorized
+
+jabong.com
+shopping
+
+ladbible.com
+entertainment, newsandmedia
+
+w3schools.com
+education, informationtech
+
+speedtest.net
+business, informationtech
+
+wittyfeed.com
+uncategorized
+
+theepochtimes.com
+education, newsandmedia
+
+zoom.us
+business, informationtech
+
+popcash.net
+advertising, business
+
+utorrent.com
+mediasharing, streamingmedia
+
+tripadvisor.com
+travel
+
+sciencedirect.com
+education
+
+funmoods.com
+business
+
+qtrax.com
+business, education, streamingmedia
+
+steampowered.com
+business, entertainment, games
+
+target.com
+shopping
+
+hp.com
+business, shopping
+
+isohunt.com
+business
+
+techcrunch.com
+business
+
+wsj.com
+business, education, newsandmedia
+
+pixabay.com
+education, mediasharing
+
+telegraph.co.uk
+newsandmedia
+
+quikr.com
+business, shopping
+
+slack.com
+business, chatandmessaging
+
+genius.com
+entertainment
+
+cricinfo.com
+entertainment, newsandmedia, sports
+
+grammarly.com
+business, education
+
+intuit.com
+business, economyandfinance
+
+ask.fm
+education
+
+pinimg.com
+business
+
+upornia.com
+adult
+
+ilivid.com
+business
+
+vice.com
+entertainment, newsandmedia
+
+soundcloud.com
+entertainment, streamingmedia
+
+empowernetwork.com
+business
+
+nfl.com
+sports
+
+wordreference.com
+education
+
+office365.com
+business, informationtech
+
+thefreedictionary.com
+education
+
+pandora.com
+entertainment, streamingmedia
+
+rumble.com
+business, informationtech
+
+88db.com
+business
+
+airbnb.com
+business, travel
+
+joomla.org
+business, informationtech
+
+mybrowserbar.com
+business
+
+reuters.com
+business, education, newsandmedia
+
+okta.com
+business
+
+searchqu.com
+business
+
+amazon.ca
+shopping
+
+homedepot.com
+shopping
+
+adultadworld.com
+advertising, business
+
+gfycat.com
+entertainment, streamingmedia
+
+nba.com
+sports
+
+spankwire.com
+adult
+
+usatoday.com
+business, newsandmedia
+
+exoclick.com
+advertising, business
+
+usps.com
+business, shopping
+
+prestoris.com
+searchenginesandportals
+
+icio.us
+business, socialnetworking
+
+hdfcbank.com
+business, economyandfinance
+
+rt.com
+newsandmedia
+
+ringtonepartner.com
+business, informationtech
+
+desktopsmiley.com
+uncategorized
+
+google.com.my
+searchenginesandportals
+
+icq.com
+chatandmessaging, informationtech
+
+formspring.me
+business
+
+hardsextube.com
+adult
+
+perfspot.com
+parked
+
+ign.com
+education, entertainment, games
+
+codecanyon.net
+business, informationtech
+
+constantcontact.com
+business
+
+zendesk.com
+business
+
+bleacherreport.com
+sports
+
+weebly.com
+business
+
+mailchimp.com
+business
+
+google.ie
+searchenginesandportals
+
+gamespot.com
+business, informationtech
+
+shopify.com
+business
+
+goodreads.com
+entertainment
+
+gearbest.com
+shopping
+
+freelancer.com
+informationtech
+
+line.me
+business
+
+atlassian.net
+business, informationtech
+
+giphy.com
+entertainment
+
+tnaflix.com
+adult
+
+groupon.com
+business, shopping
+
+streamate.com
+adult
+
+myntra.com
+shopping
+
+tmz.com
+entertainment
+
+match.com
+personals
+
+gsmarena.com
+informationtech, newsandmedia
+
+linkwithin.com
+business, education
+
+icicibank.com
+business, economyandfinance
+
+aim.com
+business, entertainment, newsandmedia
