@@ -1,14 +1,8 @@
-import os
-import sys
-from pathlib import Path
-from os import PathLike
+from urllib import parse
 
 import scrapy
 
-import urllib
-from urllib import request, parse
-
-PUSHSHIFT_API_REDDIT_BASE_URL = r'https://api.pushshift.io/reddit'
+PUSHSHIFT_API_REDDIT_BASE_URL = r"https://api.pushshift.io/reddit"
 
 
 class PushShiftAndRedditAPICrawler(scrapy.Spider):
@@ -19,7 +13,9 @@ class PushShiftAndRedditAPICrawler(scrapy.Spider):
     """
 
     def _search_submission(self, keyword: str) -> scrapy.Request:
-        query_string = parse.urlencode([('q', keyword)])
-        return scrapy.Request(url=f'{PUSHSHIFT_API_REDDIT_BASE_URL}/submission/?{query_string}')
+        query_string = parse.urlencode([("q", keyword)])
+        return scrapy.Request(
+            url=f"{PUSHSHIFT_API_REDDIT_BASE_URL}/submission/?{query_string}"
+        )
 
     # def searc
