@@ -1,13 +1,11 @@
-import dataclasses
 from dataclasses import dataclass
-
-from typing import Union, List
+from typing import List
 
 
 @dataclass
 class RedditResponseObject:
     kind: str
-    data: 'RedditObject'
+    data: "RedditObject"
 
 
 @dataclass
