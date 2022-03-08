@@ -22,11 +22,11 @@ auth = tw.OAuthHandler(API_KEY, API_KEY_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-search_words = "#TOS"
-search_hash = "TOS"
+search_words = "privacy policy"
+search_hash = ""
 new_search = search_words + " -filter:retweets"
-date_since = "2000-01-01"
-number_tweets = 1000
+date_since = "2020-01-01"
+number_tweets = 100
 
 
 def scrape(words, date_since, numtweet):
@@ -58,14 +58,16 @@ def scrape(words, date_since, numtweet):
         except AttributeError:
             text = tweet.full_text
         hashtext = list()
+        
         has_hash = False
         for j in range(0, len(hashtags)):
             hashtag_text = hashtags[j]["text"]
             if hashtag_text.lower() == search_hash.lower():
                 has_hash = True
             hashtext.append(hashtag_text)
-        if not has_hash:
-            continue
+        if search_hash != '':
+            if not has_hash:
+                continue
 
         # Appending all the information in the DataFrame
         ith_tweet = [text, retweetcount, favoritecount, hashtext]
@@ -87,6 +89,11 @@ def printtweetdata(n, ith_tweet):
 
 
 db = scrape(search_words, date_since, number_tweets)
-print(len(db))
+db = db.drop_duplicates(subset=["text", "retweetcount", "favoritecount"])
+# print(len(db))
 # print(db)
-sorted_db = db.sort_values(["retweetcount", "favoritecount"], ascending=(False, False))
+sorted_db = db.sort_values(["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True)
+
+print(sorted_db.head())
+for i in range(5):
+    printtweetdata(i, sorted_db.loc[i])
