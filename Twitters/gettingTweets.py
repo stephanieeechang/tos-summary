@@ -58,14 +58,14 @@ def scrape(words, date_since, numtweet):
         except AttributeError:
             text = tweet.full_text
         hashtext = list()
-        
+
         has_hash = False
         for j in range(0, len(hashtags)):
             hashtag_text = hashtags[j]["text"]
             if hashtag_text.lower() == search_hash.lower():
                 has_hash = True
             hashtext.append(hashtag_text)
-        if search_hash != '':
+        if search_hash != "":
             if not has_hash:
                 continue
 
@@ -92,7 +92,9 @@ db = scrape(search_words, date_since, number_tweets)
 db = db.drop_duplicates(subset=["text", "retweetcount", "favoritecount"])
 # print(len(db))
 # print(db)
-sorted_db = db.sort_values(["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True)
+sorted_db = db.sort_values(
+    ["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True
+)
 
 print(sorted_db.head())
 for i in range(5):
