@@ -1,29 +1,17 @@
 """
 This file contains database utilities.
 """
-import json
-import os
-import sys
-from pathlib import Path
-from os import PathLike
-
 import itertools
-
+import json
 import multiprocessing
-
-from typing import List, Dict, Any
-
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-import mysql.connector
+from os import PathLike
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 def _load_and_append(json_filename: Path, shared_list: List):
-    shared_list.append(
-        json.load(json_filename.open(mode='r', encoding='utf-8'))
-    )
+    shared_list.append(json.load(json_filename.open(mode="r", encoding="utf-8")))
+
 
 def collate_json(data_dir: PathLike, output_filename: PathLike) -> List[Dict[str, Any]]:
     """
@@ -38,7 +26,7 @@ def collate_json(data_dir: PathLike, output_filename: PathLike) -> List[Dict[str
     if not isinstance(out, Path):
         out = Path(out)
 
-    json_filenames = list(path.glob('*.json'))  # all json file paths
+    json_filenames = list(path.glob("*.json"))  # all json file paths
 
     with multiprocessing.Manager() as manager:
         l = manager.list()
@@ -46,7 +34,11 @@ def collate_json(data_dir: PathLike, output_filename: PathLike) -> List[Dict[str
         args = list(itertools.zip_longest(json_filenames, [l], fillvalue=l))
         with multiprocessing.Pool() as pool:
             pool.starmap(_load_and_append, args)
-        json.dump(list(l), out.open(mode='w', encoding='utf-8'))
+        json.dump(list(l), out.open(mode="w", encoding="utf-8"))
 
-if __name__ == '__main__':
-    collate_json(data_dir=Path.cwd() / 'reddit/data/PushShiftAndRedditAPICrawler-output', output_filename=Path.cwd() / 'test.json')
+
+if __name__ == "__main__":
+    collate_json(
+        data_dir=Path.cwd() / "reddit/data/PushShiftAndRedditAPICrawler-output",
+        output_filename=Path.cwd() / "test.json",
+    )
