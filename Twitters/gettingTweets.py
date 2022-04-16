@@ -33,7 +33,7 @@ def scrape(words, date_since, numtweet):
     # using .items(number of tweets) to restricted number of tweet
     tweets = tw.Cursor(
         api.search_tweets, words, lang="en", since_id=date_since, tweet_mode="extended"
-    ).items(numtweet*2)
+    ).items(numtweet * 2)
 
     list_tweets = [tweet for tweet in tweets]
 
@@ -85,6 +85,7 @@ def printtweetdata(n, ith_tweet):
     print(f"Favorite Count:{ith_tweet[2]}")
     print(f"Hashtags Used:{ith_tweet[3]}")
 
+
 search_words = "privacy policy"
 search_hash = ""
 new_search = search_words + " -filter:retweets"
@@ -95,9 +96,8 @@ number_tweets = 1000
 db = scrape(search_words, date_since, number_tweets)
 db = db.drop_duplicates(subset=["text", "retweetcount", "favoritecount"])
 print(len(db))
-db['popularity'] = db.apply(lambda row: row.retweetcount + row.favoritecount, axis=1)
-sorted_db = db.sort_values(["popularity"], ascending=(False), ignore_index=True
-)
+db["popularity"] = db.apply(lambda row: row.retweetcount + row.favoritecount, axis=1)
+sorted_db = db.sort_values(["popularity"], ascending=(False), ignore_index=True)
 # sorted_db = db.sort_values(
 #     ["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True
 # )
@@ -105,5 +105,4 @@ sorted_db = db.sort_values(["popularity"], ascending=(False), ignore_index=True
 sorted_db = sorted_db.head(number_tweets)
 
 print(sorted_db.head())
-sorted_db.to_pickle('twitter_privacy1000.pkl')
-
+sorted_db.to_pickle("twitter_privacy1000.pkl")
