@@ -22,13 +22,8 @@ auth = tw.OAuthHandler(API_KEY, API_KEY_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-search_words = "privacy policy"
-search_hash = ""
-new_search = search_words + " -filter:retweets"
-date_since = "2020-01-01"
-number_tweets = 100
 
-
+# Helper Function
 def scrape(words, date_since, numtweet):
 
     # Creating DataFrame using pandas
@@ -38,12 +33,12 @@ def scrape(words, date_since, numtweet):
     # using .items(number of tweets) to restricted number of tweet
     tweets = tw.Cursor(
         api.search_tweets, words, lang="en", since_id=date_since, tweet_mode="extended"
-    ).items(numtweet)
+    ).items(numtweet*2)
 
     list_tweets = [tweet for tweet in tweets]
 
     # Counter for Tweet Count
-    # i = 0
+    i = 0
 
     # we will iterate over each tweet to extract info
     for tweet in list_tweets:
@@ -72,6 +67,9 @@ def scrape(words, date_since, numtweet):
         # Appending all the information in the DataFrame
         ith_tweet = [text, retweetcount, favoritecount, hashtext]
         db.loc[len(db)] = ith_tweet
+        # i += 1
+        # if i == numtweet:
+        #     break
 
         # Function call to print tweet data on screen
         # printtweetdata(i, ith_tweet)
@@ -87,15 +85,25 @@ def printtweetdata(n, ith_tweet):
     print(f"Favorite Count:{ith_tweet[2]}")
     print(f"Hashtags Used:{ith_tweet[3]}")
 
+search_words = "privacy policy"
+search_hash = ""
+new_search = search_words + " -filter:retweets"
+date_since = "2020-01-01"
+number_tweets = 1000
+
 
 db = scrape(search_words, date_since, number_tweets)
 db = db.drop_duplicates(subset=["text", "retweetcount", "favoritecount"])
-# print(len(db))
-# print(db)
-sorted_db = db.sort_values(
-    ["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True
+print(len(db))
+db['popularity'] = db.apply(lambda row: row.retweetcount + row.favoritecount, axis=1)
+sorted_db = db.sort_values(["popularity"], ascending=(False), ignore_index=True
 )
+# sorted_db = db.sort_values(
+#     ["retweetcount", "favoritecount"], ascending=(False, False), ignore_index=True
+# )
+
+sorted_db = sorted_db.head(number_tweets)
 
 print(sorted_db.head())
-for i in range(5):
-    printtweetdata(i, sorted_db.loc[i])
+sorted_db.to_pickle('twitter_privacy1000.pkl')
+
