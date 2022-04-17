@@ -184,8 +184,12 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
         return False
 
     if input_dict and result_path:
-        with open(result_path, "a+") as save_pred:
-            final_dict = {}
+        with open(result_path, "w+") as save_pred:
+            if os.stat(result_path).st_size == 0:
+                curr_dict = {}
+            else:
+                curr_dict = json.load(save_pred)
+
             with torch.no_grad():
                 src, mask, segs, clss, mask_cls, src_str = input_data
                 sent_scores, mask = model(src, segs, clss, mask, mask_cls)
@@ -219,8 +223,8 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
 
                 input_dict['extractive_summary'] = pred_str
                 key = str(input_dict['uid'])
-                final_dict[key] = input_dict
-            json.dump(final_dict, save_pred)
+                curr_dict[key] = input_dict
+                json.dump(curr_dict, save_pred)
 
     else:
         with torch.no_grad():
