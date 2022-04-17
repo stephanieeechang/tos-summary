@@ -3,23 +3,23 @@ import json
 import logging
 import os
 import shutil
+import textwrap
 import time
-from tqdm import tqdm
 
 import numpy as np
 import torch
-from sklearn.model_selection import train_test_split
 from nltk.tokenize import sent_tokenize
+from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 from transformers import AutoTokenizer
-import textwrap
 
 logger = logging.getLogger(__name__)
 
 
-def split_dataset(training=True, dataset='legal_summarization'):
+def split_dataset(training=True, dataset="legal_summarization"):
     if dataset == "legal_summarization":
         data_dir = os.path.dirname(__file__)
-        rel_path = '../data/legal_summarization/all_v1.json'
+        rel_path = "../data/legal_summarization/all_v1.json"
         abs_data_path = os.path.join(data_dir, rel_path)
         documents, file_path = load_json(abs_data_path)
         doc_list = list(documents)
@@ -27,7 +27,9 @@ def split_dataset(training=True, dataset='legal_summarization'):
         # (train, test, val) = (356, 45, 45)
         #
         if training:
-            train_idx, test_idx = train_test_split(doc_list, test_size=0.2, random_state=6471)
+            train_idx, test_idx = train_test_split(
+                doc_list, test_size=0.2, random_state=6471
+            )
             return train_idx, test_idx, documents
         else:
             _, test_idx = train_test_split(doc_list, test_size=0.9, random_state=6471)
@@ -89,9 +91,9 @@ def preprocess(training):
     # Get JSON dictionary keys
     doc_list = documents.keys()
     for i in doc_list:
-        documents[i]['original_text'].replace("\n", " ").replace("[CLS] [SEP]", " ")
-        sents = sent_tokenize(documents[i]['original_text'])
-        documents[i]['original_text'] = "[CLS] [SEP]".join(sents)
+        documents[i]["original_text"].replace("\n", " ").replace("[CLS] [SEP]", " ")
+        sents = sent_tokenize(documents[i]["original_text"])
+        documents[i]["original_text"] = "[CLS] [SEP]".join(sents)
     return documents
 
 
@@ -143,7 +145,9 @@ def load_text(processed_text, max_pos, device):
 
     src, mask_src, segments_ids, clss, mask_cls = _process_src(processed_text)
     segs = torch.tensor(segments_ids)[None, :].to(device)
-    src_text = [[sent.replace("[SEP]", "").strip() for sent in processed_text.split("[CLS]")]]
+    src_text = [
+        [sent.replace("[SEP]", "").strip() for sent in processed_text.split("[CLS]")]
+    ]
     return src, mask_src, segs, clss, mask_cls, src_text
 
 
@@ -162,7 +166,7 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
         text_length = len(text)
         max_index_ngram_start = text_length - n
         for i in range(max_index_ngram_start + 1):
-            ngram_set.add(tuple(text[i: i + n]))
+            ngram_set.add(tuple(text[i : i + n]))
         return ngram_set
 
     def _block_trigrams(candidate, prediction):
@@ -217,8 +221,8 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
                 for i in range(len(pred)):
                     pred_str = pred[i].strip() + "\n"
 
-                input_dict['extractive_summary'] = pred_str
-                key = str(input_dict['uid'])
+                input_dict["extractive_summary"] = pred_str
+                key = str(input_dict["uid"])
                 final_dict[key] = input_dict
             json.dump(final_dict, save_pred)
 
@@ -265,8 +269,15 @@ def summarize(result_save_path, model, device, training, max_length=3, max_pos=5
     dict_keys = processed_dict.keys()
     for key in tqdm(dict_keys):
         input_dict = processed_dict[key]
-        input_data = load_text(input_dict['original_text'], max_pos, device=device)
-        test(model, input_dict, input_data, result_save_path, max_length, block_trigram=True)
+        input_data = load_text(input_dict["original_text"], max_pos, device=device)
+        test(
+            model,
+            input_dict,
+            input_data,
+            result_save_path,
+            max_length,
+            block_trigram=True,
+        )
 
 
 def summarize_text(text, model, device, max_length=3, max_pos=512):

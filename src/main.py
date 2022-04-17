@@ -1,15 +1,16 @@
 import logging
+import os
 import random
 from argparse import ArgumentParser
 
-import numpy as np
-import os
-
-import torch
-from model import ExtSummarizer
-from helpers import summarize, split_dataset, cal_rouge, test_rouge, summarize_text
 import nltk
-nltk.download('punkt')
+import numpy as np
+import torch
+
+from helpers import summarize, summarize_text
+from model import ExtSummarizer
+
+nltk.download("punkt")
 
 logger = logging.getLogger(__name__)
 
@@ -35,9 +36,7 @@ def main(args):
         if torch.cuda.is_available():
             device = torch.device("cuda")
         else:
-            logger.warning(
-                "CUDA GPU not available, using CPU."
-            )
+            logger.warning("CUDA GPU not available, using CPU.")
             device = torch.device("cpu")
         print("Using device:", device)
     else:
@@ -45,36 +44,49 @@ def main(args):
         print("Using device:", device)
     if args.model_type == "bertbase":
         if not os.path.exists(
-                '1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE'):
+            "1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
+        ):
             os.system(
-                "wget \"https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE\"")
+                'wget "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"'
+            )
         checkpoint = torch.load(
-            f'1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE',
-            map_location=device)
+            f"1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            map_location=device,
+        )
     else:
-        if not os.path.exists('1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE'):
-            os.system("wget \"https'://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE\"")
+        if not os.path.exists(
+            "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
+        ):
+            os.system(
+                'wget "https\'://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"'
+            )
         checkpoint = torch.load(
-            f'1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE', map_location=device)
+            f"1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            map_location=device,
+        )
 
-    model = ExtSummarizer(checkpoint=checkpoint, bert_type=args.model_type, device=device)
+    model = ExtSummarizer(
+        checkpoint=checkpoint, bert_type=args.model_type, device=device
+    )
 
     if args.demo_mode:
         text = input("Enter any Terms of Services excerpt: ")
         summarize_text(text, model, device, max_length=2)
     else:
         if not args.result_dir:
-            result_fp = 'results/summary.json'
-            dir = result_fp.split('/')[0] + '/'
+            result_fp = "results/summary.json"
+            dir = result_fp.split("/")[0] + "/"
             if not os.path.exists(dir):
                 os.makedirs(dir)
             summarize(result_fp, model, device, training=args.do_train, max_length=1)
             print("Summary saved in " + result_fp)
         else:
-            dir = args.result_dir.split('/')[0] + '/'
+            dir = args.result_dir.split("/")[0] + "/"
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            summarize(args.result_dir, model, device, training=args.do_train, max_length=1)
+            summarize(
+                args.result_dir, model, device, training=args.do_train, max_length=1
+            )
             print("Summary saved in " + args.result_dir)
 
     # TODO: Add ROUGE score calculation functions from helpers.py
@@ -127,7 +139,6 @@ if __name__ == "__main__":
         action="store_true",
         help="Enable demo mode. Input a text instead of a dataset, and prints summary.",
     )
-
 
     main_args = parser.parse_known_args()
 
