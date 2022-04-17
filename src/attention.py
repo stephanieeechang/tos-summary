@@ -1,4 +1,5 @@
 import math
+
 import torch
 import torch.nn as nn
 
@@ -12,7 +13,7 @@ import torch.nn as nn
 
 
 class PositionwiseFeedForward(nn.Module):
-    """ A two-layer Feed-Forward-Network with residual layer norm.
+    """A two-layer Feed-Forward-Network with residual layer norm.
     Args:
         d_model (int): the size of input for the first-layer of the FFN.
         d_ff (int): the hidden layer size of the second-layer
@@ -61,8 +62,16 @@ class MultiHeadedAttention(nn.Module):
         if self.use_final_linear:
             self.final_linear = nn.Linear(model_dim, model_dim)
 
-    def forward(self, key, value, query, mask=None,
-                layer_cache=None, type=None, predefined_graph_1=None):
+    def forward(
+        self,
+        key,
+        value,
+        query,
+        mask=None,
+        layer_cache=None,
+        type=None,
+        predefined_graph_1=None,
+    ):
         """
         Compute the context vector and the attention vectors.
         Args:
@@ -85,21 +94,25 @@ class MultiHeadedAttention(nn.Module):
         head_count = self.head_count
 
         def shape(x):
-            """  projection """
-            return x.view(batch_size, -1, head_count, dim_per_head) \
-                .transpose(1, 2)
+            """projection"""
+            return x.view(batch_size, -1, head_count, dim_per_head).transpose(1, 2)
 
         def unshape(x):
-            """  compute context """
-            return x.transpose(1, 2).contiguous() \
+            """compute context"""
+            return (
+                x.transpose(1, 2)
+                .contiguous()
                 .view(batch_size, -1, head_count * dim_per_head)
+            )
 
         # 1) Project key, value, and query.
         if layer_cache is not None:
             if type == "self":
-                query, key, value = self.linear_query(query), \
-                    self.linear_keys(query), \
-                    self.linear_values(query)
+                query, key, value = (
+                    self.linear_query(query),
+                    self.linear_keys(query),
+                    self.linear_values(query),
+                )
 
                 key = shape(key)
                 value = shape(value)
@@ -108,30 +121,30 @@ class MultiHeadedAttention(nn.Module):
                     device = key.device
                     if layer_cache["self_keys"] is not None:
                         key = torch.cat(
-                            (layer_cache["self_keys"].to(device), key),
-                            dim=2)
+                            (layer_cache["self_keys"].to(device), key), dim=2
+                        )
                     if layer_cache["self_values"] is not None:
                         value = torch.cat(
-                            (layer_cache["self_values"].to(device), value),
-                            dim=2)
+                            (layer_cache["self_values"].to(device), value), dim=2
+                        )
                     layer_cache["self_keys"] = key
                     layer_cache["self_values"] = value
             elif type == "context":
                 query = self.linear_query(query)
                 if layer_cache is not None:
                     if layer_cache["memory_keys"] is None:
-                        key, value = self.linear_keys(key), \
-                            self.linear_values(value)
+                        key, value = self.linear_keys(key), self.linear_values(value)
                         key = shape(key)
                         value = shape(value)
                     else:
-                        key, value = layer_cache["memory_keys"], \
-                            layer_cache["memory_values"]
+                        key, value = (
+                            layer_cache["memory_keys"],
+                            layer_cache["memory_values"],
+                        )
                     layer_cache["memory_keys"] = key
                     layer_cache["memory_values"] = value
                 else:
-                    key, value = self.linear_keys(key), \
-                        self.linear_values(value)
+                    key, value = self.linear_keys(key), self.linear_values(value)
                     key = shape(key)
                     value = shape(value)
         else:
@@ -154,15 +167,14 @@ class MultiHeadedAttention(nn.Module):
         # 3) Apply attention dropout and compute context vectors.
         attn = self.softmax(scores)
 
-        if (not predefined_graph_1 is None):
+        if not predefined_graph_1 is None:
             attn_masked = attn[:, -1] * predefined_graph_1
-            attn_masked = attn_masked / \
-                (torch.sum(attn_masked, 2).unsqueeze(2) + 1e-9)
+            attn_masked = attn_masked / (torch.sum(attn_masked, 2).unsqueeze(2) + 1e-9)
 
             attn = torch.cat([attn[:, :-1], attn_masked.unsqueeze(1)], 1)
 
         drop_attn = self.dropout(attn)
-        if (self.use_final_linear):
+        if self.use_final_linear:
             context = unshape(torch.matmul(drop_attn, value))
             output = self.final_linear(context)
             return output
