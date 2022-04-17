@@ -184,12 +184,13 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
         return False
 
     if input_dict and result_path:
-        with open(result_path, "w+") as save_pred:
-            if os.stat(result_path).st_size == 0:
-                curr_dict = {}
-            else:
+        with open(result_path, "r+") as save_pred:
+            try:
                 curr_dict = json.load(save_pred)
+            except json.decoder.JSONDecodeError:
+                curr_dict = {}
 
+        with open(result_path, "w+") as save_pred:
             with torch.no_grad():
                 src, mask, segs, clss, mask_cls, src_str = input_data
                 sent_scores, mask = model(src, segs, clss, mask, mask_cls)
@@ -266,6 +267,7 @@ def summarize(result_save_path, model, device, training, max_length=3, max_pos=5
     model.eval()
     processed_dict = preprocess(training)
     dict_keys = processed_dict.keys()
+    json_dict = {}
     for key in tqdm(dict_keys):
         input_dict = processed_dict[key]
         input_data = load_text(input_dict['original_text'], max_pos, device=device)
@@ -341,11 +343,11 @@ def test_rouge(temp_dir, cand, ref):
             if len(references[i]) < 1:
                 continue
             with open(
-                tmp_dir + "/candidate/cand.{}.txt".format(i), "w", encoding="utf-8"
+                    tmp_dir + "/candidate/cand.{}.txt".format(i), "w", encoding="utf-8"
             ) as f:
                 f.write(candidates[i].replace("<q>", "\n"))
             with open(
-                tmp_dir + "/reference/ref.{}.txt".format(i), "w", encoding="utf-8"
+                    tmp_dir + "/reference/ref.{}.txt".format(i), "w", encoding="utf-8"
             ) as f:
                 f.write(references[i].replace("<q>", "\n"))
         r = pyrouge.Rouge155()
@@ -360,7 +362,6 @@ def test_rouge(temp_dir, cand, ref):
         if os.path.isdir(tmp_dir):
             shutil.rmtree(tmp_dir)
     return results_dict
-
 
 ##################################################################################################
 # class StepCheckpointCallback(pl.callbacks.base.Callback):
