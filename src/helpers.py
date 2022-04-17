@@ -225,7 +225,6 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
                 key = str(input_dict['uid'])
                 curr_dict[key] = input_dict
                 json.dump(curr_dict, save_pred)
-
     else:
         with torch.no_grad():
             src, mask, segs, clss, mask_cls, src_str = input_data
