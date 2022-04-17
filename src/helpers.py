@@ -188,8 +188,13 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
         return False
 
     if input_dict and result_path:
-        with open(result_path, "a+") as save_pred:
-            final_dict = {}
+        with open(result_path, "r+") as save_pred:
+            try:
+                curr_dict = json.load(save_pred)
+            except json.decoder.JSONDecodeError:
+                curr_dict = {}
+
+        with open(result_path, "w+") as save_pred:
             with torch.no_grad():
                 src, mask, segs, clss, mask_cls, src_str = input_data
                 sent_scores, mask = model(src, segs, clss, mask, mask_cls)
@@ -223,9 +228,8 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
 
                 input_dict["extractive_summary"] = pred_str
                 key = str(input_dict["uid"])
-                final_dict[key] = input_dict
-            json.dump(final_dict, save_pred)
-
+                curr_dict[key] = input_dict
+                json.dump(curr_dict, save_pred)
     else:
         with torch.no_grad():
             src, mask, segs, clss, mask_cls, src_str = input_data
@@ -267,6 +271,7 @@ def summarize(result_save_path, model, device, training, max_length=3, max_pos=5
     model.eval()
     processed_dict = preprocess(training)
     dict_keys = processed_dict.keys()
+    json_dict = {}
     for key in tqdm(dict_keys):
         input_dict = processed_dict[key]
         input_data = load_text(input_dict["original_text"], max_pos, device=device)
