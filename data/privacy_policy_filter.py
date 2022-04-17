@@ -1,7 +1,7 @@
 import shutil, os
 
 alexa = 'alexa_rank.txt'
-dest_folder = 'privacy-policy-alexa'
+dest_folder = 'privacy_policy_alexa'
 top_n = 500
 if not os.path.exists(dest_folder):
     os.mkdir(dest_folder)
