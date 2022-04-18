@@ -8,9 +8,9 @@ from transformers import (BertConfig, BertModel, DistilBertConfig,
 
 from encoder import ExtTransformerEncoder
 
-CHECKPOINT_DIR = Path(__file__).parent / 'checkpoints'
-BERT_BASE_CHECKPOINT_NAME = CHECKPOINT_DIR / 'bertbase' / 'bertbase_checkpoint'
-ALTERNATE_CHECKPOINT_NAME = CHECKPOINT_DIR / 'alternate' / 'alternate_checkpoint'
+CHECKPOINT_DIR = Path(__file__).parent / "checkpoints"
+BERT_BASE_CHECKPOINT_NAME = CHECKPOINT_DIR / "bertbase" / "bertbase_checkpoint"
+ALTERNATE_CHECKPOINT_NAME = CHECKPOINT_DIR / "alternate" / "alternate_checkpoint"
 
 if not CHECKPOINT_DIR.exists():
     CHECKPOINT_DIR.mkdir()
@@ -66,13 +66,13 @@ class ExtSummarizer(nn.Module):
         return sent_scores, mask_cls
 
 
-def get_extractive_summarizer(model_type: str = 'distilbert', device='cuda'):
-    if device == 'cuda' and torch.cuda.is_available():
-        device = torch.device('cuda')
+def get_extractive_summarizer(model_type: str = "distilbert", device="cuda"):
+    if device == "cuda" and torch.cuda.is_available():
+        device = torch.device("cuda")
     else:
         print("CUDA not available, using CPU.")
-        device = torch.device('cpu')
-    if model_type == 'bertbase':
+        device = torch.device("cpu")
+    if model_type == "bertbase":
         if not BERT_BASE_CHECKPOINT_NAME.exists():
             os.system(
                 f'curl "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(BERT_BASE_CHECKPOINT_NAME)}'
@@ -95,9 +95,5 @@ def get_extractive_summarizer(model_type: str = 'distilbert', device='cuda'):
             str(ALTERNATE_CHECKPOINT_NAME),
             map_location=device,
         )
-    model = ExtSummarizer(
-        checkpoint=checkpoint,
-        bert_type=model_type,
-        device=device
-    )
+    model = ExtSummarizer(checkpoint=checkpoint, bert_type=model_type, device=device)
     return model
