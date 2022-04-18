@@ -2,7 +2,6 @@ import logging
 import os
 import random
 from argparse import ArgumentParser
-from pathlib import Path
 
 import nltk
 import numpy as np
@@ -10,14 +9,11 @@ import torch
 
 from helpers import summarize, summarize_text
 from model import ExtSummarizer
+from model import ALTERNATE_CHECKPOINT_NAME, BERT_BASE_CHECKPOINT_NAME, CHECKPOINT_DIR
 
 nltk.download("punkt")
 
 logger = logging.getLogger(__name__)
-
-CHECKPOINT_DIR = Path(__file__).parent.parent / 'checkpoints'
-BERT_BASE_CHECKPOINT_NAME = CHECKPOINT_DIR / 'bertbase' / 'bertbase_checkpoint'
-ALTERNATE_CHECKPOINT_NAME = CHECKPOINT_DIR / 'alternate' / 'alternate_checkpoint'
 
 if not CHECKPOINT_DIR.exists():
     CHECKPOINT_DIR.mkdir()
@@ -58,6 +54,7 @@ def main(args):
         # if not os.path.exists(
         #         "1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
         # ):
+        logger.info(f'Loading checkpoint from {str(BERT_BASE_CHECKPOINT_NAME)}')
         if not BERT_BASE_CHECKPOINT_NAME.exists():
             os.system(
                 f'curl "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(BERT_BASE_CHECKPOINT_NAME)}'
@@ -71,6 +68,7 @@ def main(args):
         # if not os.path.exists(
         #         "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
         # ):
+        logger.info(f'Loading checkpoint from {str(ALTERNATE_CHECKPOINT_NAME)}')
         if not ALTERNATE_CHECKPOINT_NAME.exists():
             os.system(
                 f'curl "https://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(ALTERNATE_CHECKPOINT_NAME)}'
@@ -80,7 +78,7 @@ def main(args):
             str(ALTERNATE_CHECKPOINT_NAME),
             map_location=device,
         )
-
+    logger.info(f'Instantiating summarizer with arguments: {args.model_type}, {device}')
     model = ExtSummarizer(
         checkpoint=checkpoint, bert_type=args.model_type, device=device
     )
