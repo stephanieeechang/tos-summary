@@ -209,6 +209,6 @@ if __name__ == "__main__":
         interval=timedelta(days=7),
         submissions_per_interval=100,
         pushshift_fields=["id"],
-        output_dir=Path.cwd() / f"data/{PushShiftAndRedditAPICrawler.name}-output/",
+        output_dir=Path.cwd().parent.parent / 'data' / 'reddit' / 'crawled',
     )
     crawler_process.start()
