@@ -8,11 +8,19 @@ import numpy as np
 import torch
 
 from helpers import summarize, summarize_text
-from model import ExtSummarizer
+from model import (ALTERNATE_CHECKPOINT_NAME, BERT_BASE_CHECKPOINT_NAME,
+                   CHECKPOINT_DIR, ExtSummarizer)
 
 nltk.download("punkt")
 
 logger = logging.getLogger(__name__)
+
+if not CHECKPOINT_DIR.exists():
+    CHECKPOINT_DIR.mkdir()
+
+for d in [BERT_BASE_CHECKPOINT_NAME, ALTERNATE_CHECKPOINT_NAME]:
+    if not d.parent.exists():
+        d.parent.mkdir()
 
 
 def set_seed(seed):
@@ -43,28 +51,34 @@ def main(args):
         device = torch.device("cpu")
         print("Using device:", device)
     if args.model_type == "bertbase":
-        if not os.path.exists(
-            "1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
-        ):
+        # if not os.path.exists(
+        #         "1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
+        # ):
+        logger.info(f"Loading checkpoint from {str(BERT_BASE_CHECKPOINT_NAME)}")
+        if not BERT_BASE_CHECKPOINT_NAME.exists():
             os.system(
-                'wget "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"'
+                f'curl "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(BERT_BASE_CHECKPOINT_NAME)}'
             )
         checkpoint = torch.load(
-            f"1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            # f"1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            str(BERT_BASE_CHECKPOINT_NAME),
             map_location=device,
         )
     else:
-        if not os.path.exists(
-            "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
-        ):
+        # if not os.path.exists(
+        #         "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
+        # ):
+        logger.info(f"Loading checkpoint from {str(ALTERNATE_CHECKPOINT_NAME)}")
+        if not ALTERNATE_CHECKPOINT_NAME.exists():
             os.system(
-                'wget "https\'://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"'
+                f'curl "https://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(ALTERNATE_CHECKPOINT_NAME)}'
             )
         checkpoint = torch.load(
-            f"1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            # f"1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            str(ALTERNATE_CHECKPOINT_NAME),
             map_location=device,
         )
-
+    logger.info(f"Instantiating summarizer with arguments: {args.model_type}, {device}")
     model = ExtSummarizer(
         checkpoint=checkpoint, bert_type=args.model_type, device=device
     )

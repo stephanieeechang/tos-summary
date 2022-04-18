@@ -1,9 +1,23 @@
+import os
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 from transformers import (BertConfig, BertModel, DistilBertConfig,
                           DistilBertModel)
 
 from encoder import ExtTransformerEncoder
+
+CHECKPOINT_DIR = Path(__file__).parent / "checkpoints"
+BERT_BASE_CHECKPOINT_NAME = CHECKPOINT_DIR / "bertbase" / "bertbase_checkpoint"
+ALTERNATE_CHECKPOINT_NAME = CHECKPOINT_DIR / "alternate" / "alternate_checkpoint"
+
+if not CHECKPOINT_DIR.exists():
+    CHECKPOINT_DIR.mkdir()
+
+for d in [BERT_BASE_CHECKPOINT_NAME, ALTERNATE_CHECKPOINT_NAME]:
+    if not d.parent.exists():
+        d.parent.mkdir()
 
 
 class Bert(nn.Module):
@@ -50,3 +64,36 @@ class ExtSummarizer(nn.Module):
         sents_vec = sents_vec * mask_cls[:, :, None].float()
         sent_scores = self.ext_layer(sents_vec, mask_cls).squeeze(-1)
         return sent_scores, mask_cls
+
+
+def get_extractive_summarizer(model_type: str = "bertbase", device="gpu"):
+    if device == "gpu" and torch.cuda.is_available():
+        device = torch.device("cuda")
+    else:
+        print("CUDA not available, using CPU.")
+        device = torch.device("cpu")
+    if model_type == "bertbase":
+        if not BERT_BASE_CHECKPOINT_NAME.exists():
+            os.system(
+                f'curl "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(BERT_BASE_CHECKPOINT_NAME)}'
+            )
+        checkpoint = torch.load(
+            # f"1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            str(BERT_BASE_CHECKPOINT_NAME),
+            map_location=device,
+        )
+    else:
+        # if not os.path.exists(
+        #         "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
+        # ):
+        if not ALTERNATE_CHECKPOINT_NAME.exists():
+            os.system(
+                f'curl "https://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(ALTERNATE_CHECKPOINT_NAME)}'
+            )
+        checkpoint = torch.load(
+            # f"1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
+            str(ALTERNATE_CHECKPOINT_NAME),
+            map_location=device,
+        )
+    model = ExtSummarizer(checkpoint=checkpoint, bert_type=model_type, device=device)
+    return model
