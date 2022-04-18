@@ -70,7 +70,9 @@ def get_extractive_summarizer(model_type: str = "distilbert", device="cuda"):
     if device == "cuda" and torch.cuda.is_available():
         device = torch.device("cuda")
     else:
-        print("CUDA not available, using CPU.")
+        if not torch.cuda.is_available():
+            print("CUDA not available. ", end='')
+        print('Using cpu.')
         device = torch.device("cpu")
     if model_type == "bertbase":
         if not BERT_BASE_CHECKPOINT_NAME.exists():

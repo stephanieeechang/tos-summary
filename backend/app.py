@@ -1,8 +1,12 @@
 import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 # set up directories'
+import torch.cuda
+
+from backend.utils import chunkify_text
+
 print("Setting up directories...")
 from project_config import PROJECT_ROOT
 
@@ -26,21 +30,34 @@ from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 
 from src.model import get_extractive_summarizer
+from src.helpers import summarize_text
 
 app = Flask(__name__)
 CORS(app, resources={"/api/*": {"origins": "*"}})
 
 # load up the model
-summarizer = get_extractive_summarizer(model_type="distilbert", device="gpu")
+device_name = 'cpu'
+if torch.cuda.is_available():
+    device_name = 'cuda'
+torch_device = torch.device(device_name)
+
+summarizer = get_extractive_summarizer(model_type="distilbert", device=device_name)
 
 
 @app.route("/api/privacy_policies")
 def get_available_privacy_policies():
     return jsonify(list(EXAMPLE_PRIVACY_POLICIES.keys()))
 
-
 @app.route("/api/summarize", methods=["GET"])
 def get_text_summary():
+
+    def stream_summarization(text_chunks: List[str]):
+        num_chunks = len(text_chunks)
+        for text_index, text in enumerate(text_chunks):
+            app.logger.info(f'Summarizing chunk {text_index + 1} of {num_chunks}')
+            yield summarize_text(text, model=summarizer, device=torch_device, do_print=False)
+        app.logger.info(f"Streamed {num_chunks} chunks of text.")
+
     args = request.args
     if "docType" not in args and "docName" not in args:
         missing_parameters = []
@@ -58,12 +75,20 @@ def get_text_summary():
                 f"Loading privacy policy text {str(EXAMPLE_PRIVACY_POLICIES[doc_name])}"
             )
             document = EXAMPLE_PRIVACY_POLICIES[doc_name].read_text(encoding="utf-8")
-            return document
+            app.logger.info(f'Splitting text into chunks of size 500 words...')
+            chunkified_document = chunkify_text(document, 500)
+            app.logger.info(f'Streaming predictions...')
+            return app.response_class(stream_summarization(chunkified_document), mimetype='text/plain')
         else:
             return make_response(
                 f"The specified document type Privacy Policy does not have file {doc_name} available.",
                 400,
             )
+    else:
+        return make_response(
+            f'The specified document type {doc_type} is not supported.',
+            400
+        )
 
 
 if __name__ == "__main__":
