@@ -25,6 +25,7 @@ export function ExtractiveSummaryDemoView(props) {
 
     // outputs
     const decoderUTF8 = new TextDecoder('utf-8')
+    const [outputRequested, setOutputRequested] = useState(false)
     const [valueOutput, setValueOutput] = useState("")
     const [isLoadingOutput, setIsLoadingOutput] = useState(false)
 
@@ -53,6 +54,9 @@ export function ExtractiveSummaryDemoView(props) {
     // form
     function handleSubmit(event: SubmitEvent) {
         event.preventDefault()
+        setValueOutput("")
+        setOutputRequested(true)
+        setIsLoadingOutput(true)
         console.log(event.target.id)
         if (event.target.id === "form-select") {
             fetch(
@@ -96,8 +100,9 @@ export function ExtractiveSummaryDemoView(props) {
                 <h1 className="fw-light">Extractive Summary of Privacy Policies and Terms of Service</h1>
                 <p className="fs-5">using task-specific pretrained LegalBERT</p>
             </header>
-            <main className="container-fluid m-auto">
-                <div className="row mx-auto my-5 mx-auto justify-content-center align-content-center">
+            <main className="container m-auto">
+                {/* forms */}
+                <div className="row mx-auto my-5 justify-content-center align-content-center">
                     <div className="col-12 mb-3">
                         <h2 className="fw-light text-center">See an example</h2>
                     </div>
@@ -139,6 +144,27 @@ export function ExtractiveSummaryDemoView(props) {
                         </form>
                     </div>
                 </div>
+                {/* output */}
+                {
+                    outputRequested &&
+                    <div className="row mx-auto my-5 justify-content-center align-content-center">
+                        <div className="col-12 mb-3">
+                            <h2 className='fw-light text-center'>Summary</h2>
+                        </div>
+                        {
+                            valueOutput.length >= 0 &&
+                            <div className="col"><p className="p-3 bg-light border-3">
+                                {valueOutput}
+                                {
+                                    (isLoadingOutput && outputRequested) &&
+                                    <span className="spinner-border spinner-border-sm mx-3">
+                                        <span className="visually-hidden">Loading</span>
+                                    </span>
+                                }
+                            </p></div>
+                        }
+                    </div>
+                }
             </main>
         </div>)
     }
