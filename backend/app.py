@@ -62,7 +62,7 @@ def get_text_summary():
 
     args = request.args
     app.logger.info(f"/api/summarize received arguments: {args}")
-    if 'custom' in args:    # preferss custom text, although this should not happen
+    if "custom" in args:  # preferss custom text, although this should not happen
         pass
     else:
         if "docType" not in args and "docName" not in args:
@@ -80,7 +80,9 @@ def get_text_summary():
                 app.logger.info(
                     f"Loading privacy policy text {str(EXAMPLE_PRIVACY_POLICIES[doc_name])}"
                 )
-                document = EXAMPLE_PRIVACY_POLICIES[doc_name].read_text(encoding="utf-8")
+                document = EXAMPLE_PRIVACY_POLICIES[doc_name].read_text(
+                    encoding="utf-8"
+                )
                 app.logger.info(f"Splitting text into chunks of size 500 words...")
                 chunkified_document = chunkify_text(document, 500)
                 app.logger.info(f"Streaming predictions...")
