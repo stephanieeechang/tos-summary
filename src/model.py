@@ -78,20 +78,15 @@ def get_extractive_summarizer(model_type: str = "bertbase", device="gpu"):
                 f'curl "https://www.googleapis.com/drive/v3/files/1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(BERT_BASE_CHECKPOINT_NAME)}'
             )
         checkpoint = torch.load(
-            # f"1t27zkFMUnuqRcsqf2fh8F1RwaqFoMw5e?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
             str(BERT_BASE_CHECKPOINT_NAME),
             map_location=device,
         )
     else:
-        # if not os.path.exists(
-        #         "1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE"
-        # ):
         if not ALTERNATE_CHECKPOINT_NAME.exists():
             os.system(
                 f'curl "https://www.googleapis.com/drive/v3/files/1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE" -o {str(ALTERNATE_CHECKPOINT_NAME)}'
             )
         checkpoint = torch.load(
-            # f"1WxU7cHECfYaU32oTM0JByTRGS5f6SYEF?alt=media&key=AIzaSyCmo6sAQ37OK8DK4wnT94PoLx5lx-7VTDE",
             str(ALTERNATE_CHECKPOINT_NAME),
             map_location=device,
         )

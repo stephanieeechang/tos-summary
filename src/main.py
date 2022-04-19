@@ -7,7 +7,7 @@ import nltk
 import numpy as np
 import torch
 
-from helpers import summarize, summarize_text
+from helpers import summarize, summarize_text, test_rouge
 from model import (ALTERNATE_CHECKPOINT_NAME, BERT_BASE_CHECKPOINT_NAME,
                    CHECKPOINT_DIR, ExtSummarizer)
 
@@ -88,12 +88,13 @@ def main(args):
         summarize_text(text, model, device, max_length=2)
     else:
         if not args.result_dir:
-            result_fp = "results/summary.json"
+            result_fp = f"results/summary_{args.model_type}.json"
             dir = result_fp.split("/")[0] + "/"
             if not os.path.exists(dir):
                 os.makedirs(dir)
             summarize(result_fp, model, device, training=args.do_train, max_length=1)
             print("Summary saved in " + result_fp)
+            curr_dict, avg_rouge_legalsum, avg_rouge_tosdr = test_rouge(result_fp)
         else:
             dir = args.result_dir.split("/")[0] + "/"
             if not os.path.exists(dir):
@@ -102,6 +103,7 @@ def main(args):
                 args.result_dir, model, device, training=args.do_train, max_length=1
             )
             print("Summary saved in " + args.result_dir)
+            curr_dict, avg_rouge_legalsum, avg_rouge_tosdr = test_rouge(args.result_dir)
 
     # TODO: Add ROUGE score calculation functions from helpers.py
 
@@ -158,7 +160,7 @@ if __name__ == "__main__":
 
     if not main_args[0].result_dir:
         logger.warning(
-            "Argument `--save_results` not specified to use save results. Default path 'results/summary.json' used."
+            "Argument `--save_results` not specified to use save results. Default path 'results/summary_{args.model_type}.json' used."
         )
 
     main_args = parser.parse_args()
