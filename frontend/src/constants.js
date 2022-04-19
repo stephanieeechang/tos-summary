@@ -1,0 +1,1 @@
+export const baseUrlExtractiveSummaryServerLocalHost = "http://localhost:5000/api"
