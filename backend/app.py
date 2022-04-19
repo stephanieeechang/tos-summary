@@ -61,37 +61,41 @@ def get_text_summary():
         app.logger.info(f"Streamed {num_chunks} chunks of text.")
 
     args = request.args
-    if "docType" not in args and "docName" not in args:
-        missing_parameters = []
-        for p in ["docType", "docName"]:
-            if p not in args:
-                missing_parameters.append(p)
-        return make_response(
-            f"Missing query parameters: {', '.join(missing_parameters)}", 400
-        )
-    doc_type = args["docType"]
-    doc_name = args["docName"]
-    if doc_type == "pp":
-        if doc_name in EXAMPLE_PRIVACY_POLICIES:
-            app.logger.info(
-                f"Loading privacy policy text {str(EXAMPLE_PRIVACY_POLICIES[doc_name])}"
+    app.logger.info(f"/api/summarize received arguments: {args}")
+    if 'custom' in args:    # preferss custom text, although this should not happen
+        pass
+    else:
+        if "docType" not in args and "docName" not in args:
+            missing_parameters = []
+            for p in ["docType", "docName"]:
+                if p not in args:
+                    missing_parameters.append(p)
+            return make_response(
+                f"Missing query parameters: {', '.join(missing_parameters)}", 400
             )
-            document = EXAMPLE_PRIVACY_POLICIES[doc_name].read_text(encoding="utf-8")
-            app.logger.info(f"Splitting text into chunks of size 500 words...")
-            chunkified_document = chunkify_text(document, 500)
-            app.logger.info(f"Streaming predictions...")
-            return app.response_class(
-                stream_summarization(chunkified_document), mimetype="text/plain"
-            )
+        doc_type = args["docType"]
+        doc_name = args["docName"]
+        if doc_type == "privacy policy":
+            if doc_name in EXAMPLE_PRIVACY_POLICIES:
+                app.logger.info(
+                    f"Loading privacy policy text {str(EXAMPLE_PRIVACY_POLICIES[doc_name])}"
+                )
+                document = EXAMPLE_PRIVACY_POLICIES[doc_name].read_text(encoding="utf-8")
+                app.logger.info(f"Splitting text into chunks of size 500 words...")
+                chunkified_document = chunkify_text(document, 500)
+                app.logger.info(f"Streaming predictions...")
+                return app.response_class(
+                    stream_summarization(chunkified_document), mimetype="text/plain"
+                )
+            else:
+                return make_response(
+                    f"The specified document type Privacy Policy does not have file {doc_name} available.",
+                    400,
+                )
         else:
             return make_response(
-                f"The specified document type Privacy Policy does not have file {doc_name} available.",
-                400,
+                f"The specified document type {doc_type} is not supported.", 400
             )
-    else:
-        return make_response(
-            f"The specified document type {doc_type} is not supported.", 400
-        )
 
 
 if __name__ == "__main__":
