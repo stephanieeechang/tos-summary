@@ -151,7 +151,15 @@ def load_text(processed_text, max_pos, device):
     return src, mask_src, segs, clss, mask_cls, src_text
 
 
-def test(model, input_dict, input_data, result_path, max_length, block_trigram=True, do_print=True):
+def test(
+    model,
+    input_dict,
+    input_data,
+    result_path,
+    max_length,
+    block_trigram=True,
+    do_print=True,
+):
     def _get_ngrams(n, text):
         """Calculates n-grams.
 
@@ -292,7 +300,9 @@ def summarize_text(text, model, device, max_length=3, max_pos=512, do_print=True
     model.eval()
     processed_text = preprocess_text(text)
     input_data = load_text(processed_text, max_pos, device=device)
-    return test(model, None, input_data, None, max_length, block_trigram=True, do_print=do_print)
+    return test(
+        model, None, input_data, None, max_length, block_trigram=True, do_print=do_print
+    )
 
 
 def cal_rouge(evaluated_ngrams, reference_ngrams):
