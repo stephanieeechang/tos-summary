@@ -3,11 +3,11 @@ import json
 import logging
 import os
 import textwrap
-from rouge_score import rouge_scorer
 
 import numpy as np
 import torch
 from nltk.tokenize import sent_tokenize
+from rouge_score import rouge_scorer
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from transformers import AutoTokenizer
@@ -320,7 +320,7 @@ def get_rouge_score(cand_text, ref_text):
     :param ref_text:
     :return: A dict of ROUGE scores
     """
-    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+    scorer = rouge_scorer.RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=True)
     rouge_scores = scorer.score(cand_text, ref_text)
     return rouge_scores
 
@@ -340,9 +340,9 @@ def test_rouge(results_path):
             logger.error(".json file does not exist.")
 
     dict_keys = curr_dict.keys()
-    avg_rouge_tosdr = {'rouge1': 0, 'rouge2': 0, 'rougeL': 0}
+    avg_rouge_tosdr = {"rouge1": 0, "rouge2": 0, "rougeL": 0}
     tosdr_count = 0
-    avg_rouge_legalsum = {'rouge1': 0, 'rouge2': 0, 'rougeL': 0}
+    avg_rouge_legalsum = {"rouge1": 0, "rouge2": 0, "rougeL": 0}
     legalsum_count = 0
     with open(results_path, "w+") as save_pred:
         for key in dict_keys:
@@ -357,33 +357,34 @@ def test_rouge(results_path):
             key = str(pred_dict["uid"])
             curr_dict[key] = pred_dict
 
-            rouge1 = rouge_results['rouge1'].precision
-            rouge2 = rouge_results['rouge2'].precision
-            rougeL = rouge_results['rougeL'].precision
+            rouge1 = rouge_results["rouge1"].precision
+            rouge2 = rouge_results["rouge2"].precision
+            rougeL = rouge_results["rougeL"].precision
 
-            if 'legalsum' in key:
-                avg_rouge_legalsum['rouge1'] += rouge1
-                avg_rouge_legalsum['rouge2'] += rouge2
-                avg_rouge_legalsum['rougeL'] += rougeL
+            if "legalsum" in key:
+                avg_rouge_legalsum["rouge1"] += rouge1
+                avg_rouge_legalsum["rouge2"] += rouge2
+                avg_rouge_legalsum["rougeL"] += rougeL
                 legalsum_count += 1
-            elif 'tosdr' in key:
-                avg_rouge_tosdr['rouge1'] += rouge1
-                avg_rouge_tosdr['rouge2'] += rouge2
-                avg_rouge_tosdr['rougeL'] += rougeL
+            elif "tosdr" in key:
+                avg_rouge_tosdr["rouge1"] += rouge1
+                avg_rouge_tosdr["rouge2"] += rouge2
+                avg_rouge_tosdr["rougeL"] += rougeL
                 tosdr_count += 1
 
-        avg_rouge_legalsum['rouge1'] /= legalsum_count
-        avg_rouge_legalsum['rouge2'] /= legalsum_count
-        avg_rouge_legalsum['rougeL'] /= legalsum_count
-        avg_rouge_tosdr['rouge1'] /= tosdr_count
-        avg_rouge_tosdr['rouge2'] /= tosdr_count
-        avg_rouge_tosdr['rougeL'] /= tosdr_count
+        avg_rouge_legalsum["rouge1"] /= legalsum_count
+        avg_rouge_legalsum["rouge2"] /= legalsum_count
+        avg_rouge_legalsum["rougeL"] /= legalsum_count
+        avg_rouge_tosdr["rouge1"] /= tosdr_count
+        avg_rouge_tosdr["rouge2"] /= tosdr_count
+        avg_rouge_tosdr["rougeL"] /= tosdr_count
 
         json.dump(curr_dict, save_pred)
 
     print("Average ROUGE score of the LegalSum dataset is: ", avg_rouge_legalsum)
     print("Average ROUGE score of the TOS;dr dataset is: ", avg_rouge_tosdr)
     return curr_dict, avg_rouge_legalsum, avg_rouge_tosdr
+
 
 # result_fp = "results/summary_distilbert.json"
 # dir = result_fp.split("/")[0] + "/"
