@@ -2,9 +2,8 @@ import gzip
 import json
 import logging
 import os
-import shutil
 import textwrap
-import time
+from rouge_score import rouge_scorer
 
 import numpy as np
 import torch
@@ -187,12 +186,13 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
                 return True
         return False
 
+    # If not in demo mode, save results to the path specified
     if input_dict and result_path:
-        with open(result_path, "r+") as save_pred:
-            try:
+        try:
+            with open(result_path, "r") as save_pred:
                 curr_dict = json.load(save_pred)
-            except json.decoder.JSONDecodeError:
-                curr_dict = {}
+        except (json.decoder.JSONDecodeError, FileNotFoundError) as e:
+            curr_dict = {}
 
         with open(result_path, "w+") as save_pred:
             with torch.no_grad():
@@ -230,6 +230,7 @@ def test(model, input_dict, input_data, result_path, max_length, block_trigram=T
                 key = str(input_dict["uid"])
                 curr_dict[key] = input_dict
                 json.dump(curr_dict, save_pred)
+    # If in demo mode, print out results
     else:
         with torch.no_grad():
             src, mask, segs, clss, mask_cls, src_str = input_data
@@ -271,7 +272,6 @@ def summarize(result_save_path, model, device, training, max_length=3, max_pos=5
     model.eval()
     processed_dict = preprocess(training)
     dict_keys = processed_dict.keys()
-    json_dict = {}
     for key in tqdm(dict_keys):
         input_dict = processed_dict[key]
         input_data = load_text(input_dict["original_text"], max_pos, device=device)
@@ -313,67 +313,83 @@ def cal_rouge(evaluated_ngrams, reference_ngrams):
     return {"f": f1_score, "p": precision, "r": recall}
 
 
-def test_rouge(temp_dir, cand, ref):
-    r"""Compute ROUGE scores using the official ROUGE 1.5.5 package. This function uses the
-    ``pyrouge`` python module to interface with the office ROUGE script. There should be a
-    "<q>" token between each sentence in the ``cand`` and ``ref`` files. ``pyrouge`` splits
-    sentences based on newlines but we cannot store all the summaries easily in a single text
-    file if there is a newline between each sentence since newlines mark new summaries. Thus,
-    the "<q>" token is used in the text files and is converted to a newline in this function.
-    Using "<q>" instead of ``\\n`` also makes it easier to store the ground-truth summaries
-    in the ``convert_to_extractive.py`` script.
-
-    Args:
-        temp_dir (str): A temporary folder to store files for input to the ROUGE script.
-        cand (str): The path to the file containing one candidate summary per line with
-            "<q>" tokens in between each sentence.
-        ref (str): The path to the file containing one ground-truth/gold summary per line
-            with "<q>" tokens in between each sentence.
-
-    Returns:
-        dict: Results from the ROUGE script as a python dictionary.
+def get_rouge_score(cand_text, ref_text):
     """
-    import pyrouge
+    Compute ROUGE scores using the rouge_score package.
+    :param cand_text:
+    :param ref_text:
+    :return: A dict of ROUGE scores
+    """
+    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+    rouge_scores = scorer.score(cand_text, ref_text)
+    return rouge_scores
 
-    candidates = [line.strip() for line in open(cand, encoding="utf-8")]
-    references = [line.strip() for line in open(ref, encoding="utf-8")]
-    print(len(candidates))
-    print(len(references))
-    assert len(candidates) == len(references)
 
-    cnt = len(candidates)
-    current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-    os.makedirs(temp_dir, exist_ok=True)
-    tmp_dir = os.path.join(temp_dir, "rouge-tmp-{}".format(current_time))
-    os.makedirs(tmp_dir, exist_ok=True)
-    os.makedirs(tmp_dir + "/candidate", exist_ok=True)
-    os.makedirs(tmp_dir + "/reference", exist_ok=True)
+def test_rouge(results_path):
+    """
+    Compute ROUGE scores using the rouge_score package.
+    :param results_path: Path to store rouge score and summaries
+    :return: (A dict of ROUGE scores,
+              A dict of average ROUGE scores of LegalSum,
+              A dict of average ROUGE scores of TOS;dr)
+    """
+    with open(results_path, "r+") as read_pred:
+        try:
+            curr_dict = json.load(read_pred)
+        except json.decoder.JSONDecodeError:
+            logger.error(".json file does not exist.")
 
-    try:
-        for i in range(cnt):
-            if len(references[i]) < 1:
-                continue
-            with open(
-                tmp_dir + "/candidate/cand.{}.txt".format(i), "w", encoding="utf-8"
-            ) as f:
-                f.write(candidates[i].replace("<q>", "\n"))
-            with open(
-                tmp_dir + "/reference/ref.{}.txt".format(i), "w", encoding="utf-8"
-            ) as f:
-                f.write(references[i].replace("<q>", "\n"))
-        r = pyrouge.Rouge155()
-        r.model_dir = tmp_dir + "/reference/"
-        r.system_dir = tmp_dir + "/candidate/"
-        r.model_filename_pattern = "ref.#ID#.txt"
-        r.system_filename_pattern = r"cand.(\d+).txt"
-        rouge_results = r.convert_and_evaluate()
-        print(rouge_results)
-        results_dict = r.output_to_dict(rouge_results)
-    finally:
-        if os.path.isdir(tmp_dir):
-            shutil.rmtree(tmp_dir)
-    return results_dict
+    dict_keys = curr_dict.keys()
+    avg_rouge_tosdr = {'rouge1': 0, 'rouge2': 0, 'rougeL': 0}
+    tosdr_count = 0
+    avg_rouge_legalsum = {'rouge1': 0, 'rouge2': 0, 'rougeL': 0}
+    legalsum_count = 0
+    with open(results_path, "w+") as save_pred:
+        for key in dict_keys:
+            pred_dict = curr_dict[key]
+            candidate = pred_dict["extractive_summary"]
+            candidate = candidate.replace("[CLS]", "").replace("[SEP]", "")
+            reference = pred_dict["reference_summary"]
 
+            rouge_results = get_rouge_score(candidate, reference)
+
+            pred_dict["rouge_score"] = rouge_results
+            key = str(pred_dict["uid"])
+            curr_dict[key] = pred_dict
+
+            rouge1 = rouge_results['rouge1'].precision
+            rouge2 = rouge_results['rouge2'].precision
+            rougeL = rouge_results['rougeL'].precision
+
+            if 'legalsum' in key:
+                avg_rouge_legalsum['rouge1'] += rouge1
+                avg_rouge_legalsum['rouge2'] += rouge2
+                avg_rouge_legalsum['rougeL'] += rougeL
+                legalsum_count += 1
+            elif 'tosdr' in key:
+                avg_rouge_tosdr['rouge1'] += rouge1
+                avg_rouge_tosdr['rouge2'] += rouge2
+                avg_rouge_tosdr['rougeL'] += rougeL
+                tosdr_count += 1
+
+        avg_rouge_legalsum['rouge1'] /= legalsum_count
+        avg_rouge_legalsum['rouge2'] /= legalsum_count
+        avg_rouge_legalsum['rougeL'] /= legalsum_count
+        avg_rouge_tosdr['rouge1'] /= tosdr_count
+        avg_rouge_tosdr['rouge2'] /= tosdr_count
+        avg_rouge_tosdr['rougeL'] /= tosdr_count
+
+        json.dump(curr_dict, save_pred)
+
+    print("Average ROUGE score of the LegalSum dataset is: ", avg_rouge_legalsum)
+    print("Average ROUGE score of the TOS;dr dataset is: ", avg_rouge_tosdr)
+    return curr_dict, avg_rouge_legalsum, avg_rouge_tosdr
+
+# result_fp = "results/summary_distilbert.json"
+# dir = result_fp.split("/")[0] + "/"
+# if not os.path.exists(dir):
+#     os.makedirs(dir)
+# test_rouge(result_fp)
 
 ##################################################################################################
 # class StepCheckpointCallback(pl.callbacks.base.Callback):
