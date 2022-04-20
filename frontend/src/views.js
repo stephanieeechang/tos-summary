@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {baseUrlExtractiveSummaryServerLocalHost} from "./constants";
+import {baseUrlExtractiveSummaryServerRemote as baseUrl} from "./constants";
 
-const urlExtractiveSummarySummarize = `${baseUrlExtractiveSummaryServerLocalHost}/summarize`
+const urlExtractiveSummarySummarize = `${baseUrl}/summarize`
 const fetchHeader = {
     method: "get",
     headers: {
@@ -46,9 +46,9 @@ export function ExtractiveSummaryDemoView(props) {
                     setValueOutput(readText)
                     return reader.read().then(consumeChunk)
                 }
-            })
+            }, err => console.log(err))
         }
-        reader.read().then(({done, value}) => consumeChunk({done, value}))
+        reader.read().then(({done, value}) => consumeChunk({done, value}), err => console.log(err))
     }
 
     // form
@@ -62,7 +62,7 @@ export function ExtractiveSummaryDemoView(props) {
             fetch(
                 `${urlExtractiveSummarySummarize}?docType=${valueInputDocType}&docName=${valueInputDocName}`,
                 fetchHeader
-            ).then(res => consumeResponseStream(res))
+            ).then(res => consumeResponseStream(res), err => console.error(err))
         }
         else
             if (event.target.id === "form-custom") {
@@ -77,7 +77,7 @@ export function ExtractiveSummaryDemoView(props) {
         useEffect(() => {
             // fetch a list of available privacy policy documents
             fetch(
-                `${baseUrlExtractiveSummaryServerLocalHost}/privacy_policies`,
+                `${baseUrl}/privacy_policies`,
                 {
                     method: "GET",
                     headers: {
