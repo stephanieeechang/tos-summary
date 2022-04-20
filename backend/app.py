@@ -44,6 +44,7 @@ print("Loading extractive summarizer...")
 summarizer = get_extractive_summarizer(model_type="distilbert", device=device_name)
 print("Extractive summarizer loaded.")
 
+
 @app.route("/api/privacy_policies")
 def get_available_privacy_policies():
     return jsonify(list(EXAMPLE_PRIVACY_POLICIES.keys()))
