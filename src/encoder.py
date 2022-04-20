@@ -3,7 +3,7 @@ import math
 import torch
 import torch.nn as nn
 
-from attention import MultiHeadedAttention, PositionwiseFeedForward
+from src.attention import MultiHeadedAttention, PositionwiseFeedForward
 
 """
     Implementation of Transgomer and Encoder modules are based on "Attention is All You Need"

@@ -6,7 +6,7 @@ import torch.nn as nn
 from transformers import (BertConfig, BertModel, DistilBertConfig,
                           DistilBertModel)
 
-from encoder import ExtTransformerEncoder
+from src.encoder import ExtTransformerEncoder
 
 CHECKPOINT_DIR = Path(__file__).parent / "checkpoints"
 BERT_BASE_CHECKPOINT_NAME = CHECKPOINT_DIR / "bertbase" / "bertbase_checkpoint"

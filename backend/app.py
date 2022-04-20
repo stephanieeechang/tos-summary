@@ -5,16 +5,15 @@ from typing import Dict, List
 # set up directories'
 import torch.cuda
 
-from backend.utils import chunkify_text
+from utils import chunkify_text
 
 print("Setting up directories...")
-from project_config import PROJECT_ROOT
-
+PROJECT_ROOT = Path(__file__).parent.parent.absolute()
 print(f"Project root: {PROJECT_ROOT}")
 # models module directory
 DIR_MODELS = PROJECT_ROOT / "src"
 print(f"Models at {DIR_MODELS}")
-sys.path.append(str(DIR_MODELS))
+sys.path.append(str(DIR_MODELS.absolute()))
 # example data directory
 DATA_DIR = PROJECT_ROOT / "data"
 print(f"Example data at: {DATA_DIR}")
@@ -41,8 +40,9 @@ if torch.cuda.is_available():
     device_name = "cuda"
 torch_device = torch.device(device_name)
 
+print("Loading extractive summarizer...")
 summarizer = get_extractive_summarizer(model_type="distilbert", device=device_name)
-
+print("Extractive summarizer loaded.")
 
 @app.route("/api/privacy_policies")
 def get_available_privacy_policies():
