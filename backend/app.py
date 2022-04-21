@@ -50,7 +50,7 @@ def get_available_privacy_policies():
     return jsonify(list(EXAMPLE_PRIVACY_POLICIES.keys()))
 
 
-@app.route("/api/summarize", methods=["GET"])
+@app.route("/api/summarize", methods=["GET", "POST"])
 def get_text_summary():
     def stream_summarization(text_chunks: List[str]):
         num_chunks = len(text_chunks)
@@ -63,8 +63,15 @@ def get_text_summary():
 
     args = request.args
     app.logger.info(f"/api/summarize received arguments: {args}")
-    if "custom" in args:  # preferss custom text, although this should not happen
-        pass
+    if request.method == 'POST':
+        # handle this as a custom text request
+        app.logger.info (f'/api/summarize handling custom input text: {request.json}')
+        text = request.json['custom_text']
+        text_chunks = chunkify_text(text)
+        return app.response_class(
+            stream_summarization(text_chunks),
+            mimetype='text/plain'
+        )
     else:
         if "docType" not in args and "docName" not in args:
             missing_parameters = []
