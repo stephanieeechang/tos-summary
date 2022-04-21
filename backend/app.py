@@ -4,7 +4,6 @@ from typing import Dict, List
 
 # set up directories'
 import torch.cuda
-
 from utils import chunkify_text
 
 print("Setting up directories...")
@@ -63,14 +62,13 @@ def get_text_summary():
 
     args = request.args
     app.logger.info(f"/api/summarize received arguments: {args}")
-    if request.method == 'POST':
+    if request.method == "POST":
         # handle this as a custom text request
-        app.logger.info (f'/api/summarize handling custom input text: {request.json}')
-        text = request.json['custom_text']
+        app.logger.info(f"/api/summarize handling custom input text: {request.json}")
+        text = request.json["custom_text"]
         text_chunks = chunkify_text(text)
         return app.response_class(
-            stream_summarization(text_chunks),
-            mimetype='text/plain'
+            stream_summarization(text_chunks), mimetype="text/plain"
         )
     else:
         if "docType" not in args and "docName" not in args:
