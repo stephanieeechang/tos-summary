@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {baseUrlExtractiveSummaryServerRemote as baseUrl} from "./constants";
 
+import ReactMarkdown from "react-markdown";
+
 const urlExtractiveSummarySummarize = `${baseUrl}/summarize`
 const fetchHeader = {
     method: "get",
@@ -19,6 +21,7 @@ export function ExtractiveSummaryDemoView(props) {
 
 
     // controlled inputs
+    const [whichForm, setWhichForm] = useState("select")
     const [valueInputDocType, setValueInputDocType] = useState("privacy policy")
     const [valueInputDocName, setValueInputDocName] = useState("")
     const [valueInputCustomText, setValueInputCustomText] = useState("")
@@ -31,23 +34,26 @@ export function ExtractiveSummaryDemoView(props) {
 
     function consumeResponseStream(res: Response) {
         const reader = res.body.getReader()
+        // let chunkCount = 0;
         let readText = "";
         function consumeChunk({done, value}) {
             if (!isLoadingOutput) setIsLoadingOutput(true)
-            reader.read().then(({done, value}) => {
                 if (done) {
+                    // console.log(`Done with chunk count ${chunkCount}`)
+                    // console.log(readText)
                     setIsLoadingOutput(false)
                     // console.log(`readText: ${readText}`)
                     // console.log(`state: ${valueOutput}`)
                 } else {
+                    // console.log(`consumeChunk: received chunk ${chunkCount++}`)
                     const decoded = decoderUTF8.decode(value, {stream: true})
                     // console.log(decoded)
                     readText = readText.concat(` ${decoded}`)
+                    // console.log(readText)
                     setValueOutput(readText)
-                    return reader.read().then(consumeChunk)
+                    return reader.read().then(consumeChunk, err => console.log(err))
                 }
-            }, err => console.log(err))
-        }
+            }
         reader.read().then(({done, value}) => consumeChunk({done, value}), err => console.log(err))
     }
 
@@ -59,6 +65,7 @@ export function ExtractiveSummaryDemoView(props) {
         setIsLoadingOutput(true)
         console.log(event.target.id)
         if (event.target.id === "form-select") {
+            setWhichForm("select")
             fetch(
                 `${urlExtractiveSummarySummarize}?docType=${valueInputDocType}&docName=${valueInputDocName}`,
                 fetchHeader
@@ -66,10 +73,19 @@ export function ExtractiveSummaryDemoView(props) {
         }
         else
             if (event.target.id === "form-custom") {
+                setWhichForm("custom")
                 fetch(
-                    `${urlExtractiveSummarySummarize}?custom=${valueInputCustomText}`,
-                    fetchHeader
-                ).then(res => consumeResponseStream(res))
+                    urlExtractiveSummarySummarize,
+                    {
+                        method: "post",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json;charset=UTF-8"
+                        },
+                        body: JSON.stringify({"custom_text": valueInputCustomText})
+                    }
+                ).then(res => consumeResponseStream(res), err => console.error(err))
+                    // .then(res => console.log(res.text().then(t => console.log(t))))
             }
         }
 
@@ -89,7 +105,6 @@ export function ExtractiveSummaryDemoView(props) {
                 res.json().then(docs => {
                     setPrivacyPolicyDocuments(docs)
                     setPrivacyPolicyDocumentsReady(true)
-                    // also set the initial v
                 })
             })
         }, [])
@@ -125,21 +140,35 @@ export function ExtractiveSummaryDemoView(props) {
                                     {privacyPolicyDocuments.map(documentName => (
                                         <option value={documentName}>{documentName}</option>))}
                                 </datalist>
-                                <button className="btn btn-secondary" type="submit">Summarize</button>
+                                <button className="btn btn-primary" disabled={isLoadingOutput} type="submit">
+                                    {
+                                        isLoadingOutput &&
+                                        <span className="spinner-border spinner-border-sm me-2 px-1" role="status"
+                                              aria-hidden="true" />
+                                    }
+                                    Summarize
+                                </button>
                             </div>
                         </form>
                     </div>
                     <div className="col-12 mb-1"><p className="fw-bold fs-5 text-center m-0 p-0">or</p></div>
                     <div className="col-12 mb-3"><h2 className="fw-light text-center">Summarize your own text</h2></div>
                     <div className="col mb-3">
-                        <form id="form-custom" action={urlExtractiveSummarySummarize} method="get" target="_self">
+                        <form id="form-custom" action={urlExtractiveSummarySummarize} method="get" target="_self" onSubmit={handleSubmit}>
                             <label htmlFor="input-custom-text" hidden>Custom Text</label>
                             <div className="input-group m-auto pe-auto">
                                 <textarea className="form-control" name="input-custom-text" id="input-custom-text"
                                           required cols="30" rows="10"
                                           placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
                                           onChange={event => setValueInputCustomText(event.target.value)}/>
-                                <button className="btn btn-secondary" type="submit">Summarize</button>
+                                <button className="btn btn-primary" disabled={isLoadingOutput} type="submit">
+                                    {
+                                        isLoadingOutput &&
+                                        <span className="spinner-border spinner-border-sm me-2 px-1" role="status"
+                                              aria-hidden="true" />
+                                    }
+                                    Summarize
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -153,15 +182,17 @@ export function ExtractiveSummaryDemoView(props) {
                         </div>
                         {
                             valueOutput.length >= 0 &&
-                            <div className="col"><p className="p-3 bg-light border-3">
-                                {valueOutput}
+                            <div className="col p-3 bg-light border-3">
+                                <ReactMarkdown>
+                                    {valueOutput}
+                                </ReactMarkdown>
                                 {
                                     (isLoadingOutput && outputRequested) &&
                                     <span className="spinner-border spinner-border-sm mx-3">
                                         <span className="visually-hidden">Loading</span>
                                     </span>
                                 }
-                            </p></div>
+                            </div>
                         }
                     </div>
                 }
